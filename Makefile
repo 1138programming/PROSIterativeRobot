@@ -11,13 +11,13 @@ SUBDIRS=src
 
 # Include common aspects of this project
 -include $(ROOT)/common.mk
-
+-include $(ROOT)/template.mk # For creating the template files
 ASMSRC:=$(wildcard *.$(ASMEXT))
 ASMOBJ:=$(patsubst %.o,$(BINDIR)/%.o,$(ASMSRC:.$(ASMEXT)=.o))
 HEADERS:=$(wildcard *.$(HEXT))
-CSRC=$(wildcard *.$(CEXT))
+CSRC=$(wildcard *.$(CEXT)) $(wildcard **/*.$(CEXT))
 COBJ:=$(patsubst %.o,$(BINDIR)/%.o,$(CSRC:.$(CEXT)=.o))
-CPPSRC:=$(wildcard *.$(CPPEXT))
+CPPSRC:=$(wildcard *.$(CPPEXT)) $(wildcard **/*.$(CPPEXT))
 CPPOBJ:=$(patsubst %.o,$(BINDIR)/%.o,$(CPPSRC:.$(CPPEXT)=.o))
 OUT:=$(BINDIR)/$(OUTNAME)
 
@@ -27,7 +27,7 @@ OUT:=$(BINDIR)/$(OUTNAME)
 all: $(BINDIR) $(OUT)
 
 # Remove all intermediate object files (remove the binary directory)
-clean:
+clean::
 	-rm -f $(OUT)
 	-rm -rf $(BINDIR)
 
