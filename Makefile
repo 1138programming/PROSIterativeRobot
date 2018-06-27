@@ -22,6 +22,7 @@ CPPOBJ:=$(patsubst %.o,$(BINDIR)/%.o,$(CPPSRC:.$(CPPEXT)=.o))
 OUT:=$(BINDIR)/$(OUTNAME)
 
 .PHONY: all clean flash upload upload-legacy _force_look
+.DEFAULT_GOAL := all
 
 # By default, compile program
 all: $(BINDIR) $(OUT)
@@ -55,7 +56,7 @@ $(BINDIR):
 	-@mkdir -p $(BINDIR)
 
 # Compile program
-$(OUT): $(SUBDIRS) $(ASMOBJ) $(COBJ) $(CPPOBJ)
+$(OUT): $(SUBDIRS) #$(ASMOBJ) $(COBJ) $(CPPOBJ)
 	@echo LN $(BINDIR)/*.o $(LIBRARIES) to $@
 	@$(CC) $(LDFLAGS) $(BINDIR)/*.o $(LIBRARIES) -o $@
 	@$(MCUPREFIX)size $(SIZEFLAGS) $(OUT)

@@ -10,10 +10,10 @@ TEMPLATEOBJS = _bin_RobotBase _bin_subsystems_Subsystem _bin_events_EventSchedul
 
 TEMPLATE=$(TEMPLATESDIR)/$(LIBNAME)-template
 
+.DEFAULT_GOAL: all
+
 clean::
 	-rm -rf $(TEMPLATESDIR)
-
-.DEFAULT_GOAL: all
 
 library: clean $(BINDIR) $(SUBDIRS) $(ASMOBJ) $(COBJ) $(CPPOBJ)
 	$(MCUPREFIX)ar rvs $(BINDIR)/$(LIBNAME).a $(foreach f,$(TEMPLATEOBJS),$(BINDIR)/$(f).o)
