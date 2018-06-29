@@ -6,29 +6,29 @@ RobotBase::RobotBase() {
 }
 
 void RobotBase::robotInit() {
-  printf("Default robotInit() function");
+  printf("Robot created.\n");
 }
 
 void RobotBase::autonInit() {
-  printf("Default autonInit() function");
+  printf("Default autonInit() function\n");
 }
 
 void RobotBase::autonPeriodic() {
-  printf("Default autonPeriodic() function");
+  printf("Default autonPeriodic() function\n");
   EventScheduler::getInstance()->update();
 }
 
 void RobotBase::teleopInit() {
-  printf("Default teleopInit() function");
+  printf("Default teleopInit() function\n");
 }
 
 void RobotBase::teleopPeriodic() {
-    printf("Default teleopPeriodic() function");
+    printf("Default teleopPeriodic() function\n");
     EventScheduler::getInstance()->update();
 }
 
 void RobotBase::disabledInit() {
-  printf("Default disabledInit() function");
+  printf("Default disabledInit() function\n");
 }
 
 void RobotBase::disabledPeriodic() {

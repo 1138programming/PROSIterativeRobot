@@ -6,8 +6,10 @@
 
 class Robot : public RobotBase {
   private:
+    static Robot* instance;
   public:
     Robot();
+    static Robot* getInstance();
 };
 
 

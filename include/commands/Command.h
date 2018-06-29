@@ -7,11 +7,13 @@ class Command {
   private:
   public:
     int priority = 50; // Commands can only be interrupted by commands with a higher priority
+    bool inQueue = false;
+    bool initialized = false;
 
-    virtual void canRun(); // Whether or not the command can run right now. If false, it is ignored
+    virtual bool canRun(); // Whether or not the command can run right now. If false, it is ignored
     virtual void initialize(); // Set up the command for running
     virtual void run(); // Run the command
-    virtual void isFinished(); // Whether or not the command is finished. The run() command is run continuously until thie istrue
+    virtual bool isFinished(); // Whether or not the command is finished. The run() command is run continuously until thie istrue
     virtual void end(); // Run when command is finished
     virtual void interrupted(); // Run when command was interrupted by one with a higher priority
     Command();
