@@ -1,12 +1,22 @@
 LIBNAME=libIterativeRobot
-VERSION=0.0.1
+VERSION=1.6.0
 
 TEMPLATESDIR=$(ROOT)/templates
 
-# extra files (like header files)
-TEMPLATEFILES = include/RobotBase.h include/subsystems/Subsystem.h include/events/EventListener.h include/events/EventScheduler.h include/events/JoystickButton.h include/commands/Command.h include/commands/CommandGroup.h
+# Files (like header files) & the custom makefile for properly building
+# Also has cpp files for the end-user to edit for developing the robot
+TEMPLATEFILES = GNUmakefile src/GNUmakefile include/RobotBase.h include/Robot.h \
+	include/subsystems/Subsystem.h include/events/EventListener.h \
+	include/events/EventScheduler.h include/events/JoystickButton.h \
+	include/commands/Command.h include/commands/CommandGroup.h \
+	src/init.cpp src/Robot.cpp
 # basename of the source files that should be archived
-TEMPLATEOBJS = _bin_RobotBase _bin_subsystems_Subsystem _bin_events_EventScheduler _bin_events_JoystickButton _bin_commands_Command _bin_commands_CommandGroup
+TEMPLATEOBJS = _bin_RobotBase _bin_opcontrol _bin_auto _bin_subsystems_Subsystem\
+ 	_bin_events_EventScheduler _bin_events_JoystickButton _bin_commands_Command\
+	_bin_commands_CommandGroup
+
+# files to remove (e.g. ones that are changed/removed for this)
+REMOVEFILES = auto.c init.c opcontrol.c Makefile
 
 TEMPLATE=$(TEMPLATESDIR)/$(LIBNAME)-template
 
@@ -20,7 +30,7 @@ library: clean $(BINDIR) $(SUBDIRS) $(ASMOBJ) $(COBJ) $(CPPOBJ)
 	mkdir -p $(TEMPLATE) $(TEMPLATE)/firmware $(addprefix $(TEMPLATE)/, $(dir $(TEMPLATEFILES)))
 	cp $(BINDIR)/$(LIBNAME).a $(TEMPLATE)/firmware/$(LIBNAME).a
 	$(foreach f,$(TEMPLATEFILES),cp $(f) $(TEMPLATE)/$(f);)
-	pros conduct create-template $(LIBNAME) $(VERSION) $(TEMPLATE) --ignore template.pros --upgrade-files firmware/$(LIBNAME).a $(foreach f,$(TEMPLATEFILES),--upgrade-files $(f))
+	pros conduct create-template $(LIBNAME) $(VERSION) $(TEMPLATE) --ignore template.pros $(foreach f,$(REMOVEFILES),--ignore $(f)) --upgrade-files firmware/$(LIBNAME).a $(foreach f,$(TEMPLATEFILES),--upgrade-files $(f))
 	@echo Need to zip $(TEMPLATE) without the base directory $(notdir $(TEMPLATE))
 	cd $(TEMPLATE) && zip -r ../$(notdir $(TEMPLATE)) *
 

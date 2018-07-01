@@ -4,12 +4,14 @@
 #include "main.h"
 #include "events/EventListener.h"
 #include "commands/Command.h"
+#include "subsystems/Subsystem.h"
 #include <vector>
 
 class EventScheduler {
   private:
     static EventScheduler* instance;
     EventScheduler();
+    std::vector<Subsystem*> subsystems;
     std::vector<EventListener*> eventListeners;
     std::vector<Command*> commandQueue;
   public:
@@ -18,6 +20,7 @@ class EventScheduler {
     void update();
     void addEventListener(EventListener* eventListener);
     void addCommand(Command* commandToRun);
+    void trackSubsystem(Subsystem* aSubsystem);
 };
 
 #endif // _EVENTS_EVENTSCHEDULER_H_

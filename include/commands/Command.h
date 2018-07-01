@@ -2,13 +2,18 @@
 #define _COMMANDS_COMMAND_H_
 
 #include "main.h"
+#include <vector>
+class Subsystem;
 
 class Command {
   private:
+    std::vector<Subsystem*> subsystemRequirements;
+    void requires(Subsystem* aSubsystem);
   public:
     int priority = 50; // Commands can only be interrupted by commands with a higher priority
-    bool inQueue = false;
     bool initialized = false;
+
+    std::vector<Subsystem*>& getRequirements();
 
     virtual bool canRun(); // Whether or not the command can run right now. If false, it is ignored
     virtual void initialize(); // Set up the command for running

@@ -12,7 +12,8 @@ class RobotBase {
       Disabled,
     };
     RobotState lastState = RobotState::None;
-  public:
+    template<class RobotMain> static void _privateRunRobot();
+  protected:
     virtual void robotInit();
     virtual void autonInit();
     virtual void autonPeriodic();
@@ -20,8 +21,10 @@ class RobotBase {
     virtual void teleopPeriodic();
     virtual void disabledInit();
     virtual void disabledPeriodic();
+  public:
     void doOneCycle();
     RobotBase();
+    template<class RobotMain> static void runRobot();
 };
 
 

@@ -11,7 +11,6 @@
  */
 
 #include "main.h"
-#include "Robot.h"
 
 /*
  * Runs the user autonomous code. This function will be started in its own task with the default
@@ -28,9 +27,7 @@
  * so, the robot will await a switch to another mode or disable/enable cycle.
  */
 void autonomous() {
-  Robot* aRobot = Robot::getInstance();
   while (1) {
-    aRobot->doOneCycle();
     delay(20);
   }
 }

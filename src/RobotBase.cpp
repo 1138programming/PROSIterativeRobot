@@ -71,3 +71,16 @@ void RobotBase::doOneCycle() {
     }
   }
 }
+
+template<class RobotMain>
+void _privateRunRobot() {
+  RobotMain* robotInstance = RobotMain::getInstance();
+  while (true) {
+    RobotMain::doOneCycle();
+  }
+}
+
+template<class RobotMain>
+void runRobot() {
+  taskCreate(_privateRunRobot<RobotMain>, TASK_DEFAULT_STACK_SIZE, NULL, TASK_PRIORITY_DEFAULT);
+}

@@ -38,10 +38,10 @@ class JoystickButton : public EventListener {
     char buttonGroup;
     char button;
     bool lastState = false;
-    Command* pressedCommand;
-    Command* heldCommand;
-    Command* depressedCommand;
-    Command* releasedCommand;
+    Command* pressedCommand = NULL;
+    Command* heldCommand = NULL;
+    Command* depressedCommand = NULL;
+    Command* releasedCommand = NULL;
   protected:
     virtual void checkConditions();
   public:

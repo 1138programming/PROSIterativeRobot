@@ -11,7 +11,6 @@
  */
 
 #include "main.h"
-#include "Robot.h"
 
 /*
  * Runs the user operator control code. This function will be started in its own task with the
@@ -31,10 +30,7 @@
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
-	delay(1000);
-	Robot* aRobot = Robot::getInstance();
 	while (1) {
-		aRobot->doOneCycle();
 		delay(20);
 	}
 }

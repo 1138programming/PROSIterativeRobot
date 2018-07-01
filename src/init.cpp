@@ -11,6 +11,7 @@
  */
 
 #include "main.h"
+#include "Robot.h"
 
 /*
  * Runs pre-initialization code. This function will be started in kernel mode one time while the
@@ -32,9 +33,11 @@ void initializeIO() {
  * This function should initialize most sensors (gyro, encoders, ultrasonics), LCDs, global
  * variables, and IMEs.
  *
- * This function must exit relatively promptly, or the operatorControl() and autonomous() tasks
- * will not start. An autonomous mode selection menu like the pre_auton() in other environments
- * can be implemented in this task if desired.
+ * The last line of this function must be some form of `Robot::runRobot<Robot>()`
  */
 void initialize() {
+  // The main robot class can be changed here if needed by changing "Robot"
+  // to the name of your robot class (E.g. `MyRobot::runRobot<MyRobot>()`)
+  // This should be the last line of the initialize() function
+  Robot::runRobot<Robot>();
 }
