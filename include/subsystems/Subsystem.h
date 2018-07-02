@@ -8,6 +8,7 @@ class Command;
 class Subsystem {
   private:
     Command* defaultCommand = NULL;
+  protected:
     void setDefaultCommand(Command* aCommand);
   public:
     Command* getDefaultCommand();

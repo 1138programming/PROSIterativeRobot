@@ -2,12 +2,18 @@
 #include "events/EventScheduler.h"
 #include "events/JoystickButton.h"
 
+#include "commands/ExampleCommand.h"
+
 Robot* Robot::instance = 0;
 
 Robot::Robot() {
   printf("Overridden robot initializer!\n");
+  // Initialize any subsystems
+  exampleSubsystem = new ExampleSubsystem();
+
+  // Initialize any actions/commands needed
   JoystickButton* test = new JoystickButton(MainJoystick, Btn5U);
-  //test->whenPressed(new TestCommand);
+  test->whenPressed(new ExampleCommand());
 }
 
 void Robot::robotInit() {

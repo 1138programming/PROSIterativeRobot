@@ -8,6 +8,7 @@ class Subsystem;
 class Command {
   private:
     std::vector<Subsystem*> subsystemRequirements;
+  protected:
     void requires(Subsystem* aSubsystem);
   public:
     int priority = 50; // Commands can only be interrupted by commands with a higher priority

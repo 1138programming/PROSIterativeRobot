@@ -1,0 +1,7 @@
+#include "subsystems/ExampleSubsystem.h"
+
+ExampleSubsystem::ExampleSubsystem() {
+  // If you want to set a default command to run when this subsystem
+  // is idle, uncomment and modify the following line of code:
+  // setDefaultCommand(new ExampleCommand());
+}
