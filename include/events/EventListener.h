@@ -6,7 +6,7 @@
 class EventListener {
   private:
   protected:
-    virtual void checkConditions();
+    virtual void checkConditions() = 0;
   public:
   friend class EventScheduler; // Let the Event Scheduler use the checkConditions() method
 };

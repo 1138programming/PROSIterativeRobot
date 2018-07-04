@@ -5,9 +5,10 @@
 #include "commands/ExampleCommand.h"
 
 Robot* Robot::instance = 0;
+ExampleSubsystem* Robot::exampleSubsystem = 0;
 
 Robot::Robot() {
-  printf("Overridden robot initializer!\n");
+  printf("Overridden robot constructor!\n");
   // Initialize any subsystems
   exampleSubsystem = new ExampleSubsystem();
 

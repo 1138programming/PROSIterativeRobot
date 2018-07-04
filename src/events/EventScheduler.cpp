@@ -2,12 +2,20 @@
 
 EventScheduler* EventScheduler::instance = NULL;
 
+namespace std {
+    // Fix odd linker errors - please fix
+    void __throw_bad_alloc() {while (1);}
+    void __throw_length_error(char const* ignore) {while (1);}
+}
+
 EventScheduler::EventScheduler() {
 }
 
 void EventScheduler::update() {
+  printf("UPDATING!\n");
   long startTime = millis();
   auto listenLoop = [](void* eventListeners) -> void {
+    printf("LISTENLOOP!\n");
     for (EventListener* listener : *(reinterpret_cast<std::vector<EventListener*>*>(eventListeners))) {
       listener->checkConditions();
     }
@@ -39,7 +47,7 @@ void EventScheduler::update() {
       std::vector<Subsystem*> commandRequirements = command->getRequirements();
       for (size_t j = 0; j < commandRequirements.size(); j++) {
         if (commandRequirements[j]->currentCommand != NULL) {
-          if (commandRequirements[j]->currentCommand->priority >= command->priority) {
+          if (command->canBeInterruptedBy(commandRequirements[j]->currentCommand)) {
             // Re-null all of the commands, send something to stdout, and
             // then remove this from the command queue.
             for (size_t k = j; k >= 0; --k) {

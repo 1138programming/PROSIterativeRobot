@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include <vector>
+
 class Subsystem;
 
 class Command {
@@ -22,6 +23,12 @@ class Command {
     virtual bool isFinished(); // Whether or not the command is finished. The run() command is run continuously until thie istrue
     virtual void end(); // Run when command is finished
     virtual void interrupted(); // Run when command was interrupted by one with a higher priority
+
+    // Slightly more advanced features... use at your own risk, as
+    // these may have unexpected consequences on the rest of the command system
+    virtual bool canBeInterruptedBy(Command* aCommand); // TODO: implement
+
+    // ...and finally, the constructor!
     Command();
 };
 

@@ -39,5 +39,6 @@ void initialize() {
   // The main robot class can be changed here if needed by changing "Robot"
   // to the name of your robot class (E.g. `MyRobot::runRobot<MyRobot>()`)
   // This should be the last line of the initialize() function
-  Robot::runRobot<Robot>();
+  printf("HERE 1!");
+  RobotBase::runRobot<Robot>();
 }

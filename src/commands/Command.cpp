@@ -36,3 +36,7 @@ void Command::end() {
 void Command::interrupted() {
 
 }
+
+bool Command::canBeInterruptedBy(Command* aCommand) {
+  return aCommand->priority > this->priority;
+}
