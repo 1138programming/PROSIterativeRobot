@@ -26,7 +26,7 @@ class Command {
 
     // Slightly more advanced features... use at your own risk, as
     // these may have unexpected consequences on the rest of the command system
-    virtual bool canBeInterruptedBy(Command* aCommand); // TODO: implement
+    virtual bool canBeInterruptedBy(Command* aCommand);
 
     // ...and finally, the constructor!
     Command();

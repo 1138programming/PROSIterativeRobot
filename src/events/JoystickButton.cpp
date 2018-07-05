@@ -7,39 +7,51 @@ JoystickButton::JoystickButton(Joysticks joystick, Buttons button) {
     case Btn5U:
       this->buttonGroup = 5;
       this->button = JOY_UP;
+      break;
     case Btn5D:
       this->buttonGroup = 5;
       this->button = JOY_DOWN;
+      break;
     case Btn6U:
       this->buttonGroup = 6;
       this->button = JOY_UP;
+      break;
     case Btn6D:
       this->buttonGroup = 6;
       this->button = JOY_DOWN;
+      break;
     case Btn7U:
       this->buttonGroup = 7;
       this->button = JOY_UP;
+      break;
     case Btn7D:
       this->buttonGroup = 7;
       this->button = JOY_DOWN;
+      break;
     case Btn7L:
       this->buttonGroup = 7;
       this->button = JOY_LEFT;
+      break;
     case Btn7R:
       this->buttonGroup = 7;
       this->button = JOY_RIGHT;
+      break;
     case Btn8U:
       this->buttonGroup = 8;
       this->button = JOY_UP;
+      break;
     case Btn8D:
       this->buttonGroup = 8;
       this->button = JOY_DOWN;
+      break;
     case Btn8L:
       this->buttonGroup = 8;
       this->button = JOY_LEFT;
+      break;
     case Btn8R:
       this->buttonGroup = 8;
       this->button = JOY_RIGHT;
+      break;
   }
   EventScheduler::getInstance()->addEventListener(this);
 }
@@ -48,7 +60,6 @@ void JoystickButton::checkConditions() {
   bool currentButtonState = joystickGetDigital(joystickToCheck, buttonGroup, button);
   if (currentButtonState) {
     if (currentButtonState == lastState) {
-      printf("HELD\n");
       if (heldCommand != NULL) {
         EventScheduler::getInstance()->addCommand(heldCommand);
       }

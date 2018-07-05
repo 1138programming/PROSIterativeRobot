@@ -12,22 +12,8 @@ EventScheduler::EventScheduler() {
 }
 
 void EventScheduler::update() {
-  printf("UPDATING!\n");
-  long startTime = millis();
-  auto listenLoop = [](void* eventListeners) -> void {
-    printf("LISTENLOOP!\n");
-    for (EventListener* listener : *(reinterpret_cast<std::vector<EventListener*>*>(eventListeners))) {
-      listener->checkConditions();
-    }
-  };
-
-  // PROS v2 tasks, since C++'s <thread> module isn't available
-  TaskHandle listenerTask = taskCreate(listenLoop, TASK_DEFAULT_STACK_SIZE, &this->eventListeners, TASK_PRIORITY_DEFAULT);
-  while ((millis() - startTime) < millisecondTimeout && taskGetState(listenerTask) == TASK_RUNNING) {
-    taskDelay(2); // Wait 2 milliseconds
-  }
-  if (taskGetState(listenerTask) != TASK_RUNNING) {
-    taskDelete(listenerTask);
+  for (EventListener* listener : eventListeners) {
+    listener->checkConditions();
   }
 
   std::vector<Command*> commandsToAdd;
@@ -36,7 +22,7 @@ void EventScheduler::update() {
     command = commandQueue[i];
     if (!command->canRun()) {
       command->initialized = false;
-      commandQueue.erase(commandQueue.begin(), commandQueue.begin() + i);
+      commandQueue.erase(commandQueue.begin() + i);
       i--;
       continue;
     }
@@ -54,7 +40,7 @@ void EventScheduler::update() {
               commandRequirements[k]->currentCommand = NULL;
               printf("Warning: Command tried using a subsystem that was already in use! Skipping...\n");
             }
-            commandQueue.erase(commandQueue.begin(), commandQueue.begin() + i);
+            commandQueue.erase(commandQueue.begin() + i);
             i--;
             goto skipCommand; // This is a valid use for a "goto"
           } else {
@@ -70,7 +56,7 @@ void EventScheduler::update() {
     if (command->isFinished()) {
       command->end();
       command->initialized = false;
-      commandQueue.erase(commandQueue.begin(), commandQueue.begin() + i);
+      commandQueue.erase(commandQueue.begin() + i);
       i--;
       // Now we need to free all of the subsystem's requirements and
       // if needed, create the default command again
