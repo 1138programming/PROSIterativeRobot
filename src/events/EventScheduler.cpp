@@ -12,9 +12,9 @@ EventScheduler::EventScheduler() {
 }
 
 void EventScheduler::update() {
-  //for (EventListener* listener : eventListeners) {
-  //  listener->checkConditions();
-  //}
+  for (EventListener* listener : eventListeners) {
+    listener->checkConditions();
+  }
 
   for (Subsystem* subsystem : subsystems) {
     subsystem->initDefaultCommand();
@@ -23,7 +23,6 @@ void EventScheduler::update() {
 
   std::vector<Command*> commandsToAdd;
   Command* command;
-  printf("CommandQueue size: %d\n", commandQueue.size());
   for (size_t i = 0; i < commandQueue.size(); i++) { // Should increment to zero if needed
     command = commandQueue[i];
     if (!command->canRun()) {

@@ -16,7 +16,7 @@ void ExampleCommand::initialize() {
 
 void ExampleCommand::run() {
   // Code that runs when this command is scheduled to run
-  printf("EXAMPLECOMMAND!!!!!1!1!!!\n");
+  printf("Example command is running.\n");
 }
 
 bool ExampleCommand::isFinished() {
