@@ -17,14 +17,13 @@ void EventScheduler::update() {
   //}
 
   for (Subsystem* subsystem : subsystems) {
-    printf("INITIALIZING A FUCKING SUBSYSTEM COMMAND\n");
     subsystem->initDefaultCommand();
   }
   subsystems.clear();
 
   std::vector<Command*> commandsToAdd;
   Command* command;
-  printf("CommandQueue size: %d", commandQueue.size());
+  printf("CommandQueue size: %d\n", commandQueue.size());
   for (size_t i = 0; i < commandQueue.size(); i++) { // Should increment to zero if needed
     command = commandQueue[i];
     if (!command->canRun()) {
@@ -43,11 +42,14 @@ void EventScheduler::update() {
           if (!commandRequirements[j]->currentCommand->canBeInterruptedBy(command)) {
             // Re-null all of the commands, send something to stdout, and
             // then remove this from the command queue.
-            for (size_t k = j; k >= 0; --k) {
+            for (size_t k = 0; k <= j; k++) {
               commandRequirements[k]->currentCommand = NULL;
               printf("Warning: Command tried using a subsystem that was already in use! Skipping...\n");
             }
+            delay(500);
             commandQueue.erase(commandQueue.begin() + i);
+            printf("Erased");
+            delay(500);
             i--;
             goto skipCommand; // This is a valid use for a "goto"
           } else {
@@ -69,6 +71,7 @@ void EventScheduler::update() {
       // if needed, create the default command again
       std::vector<Subsystem*> commandRequirements = command->getRequirements();
       for (size_t j = 0; j < commandRequirements.size(); j++) {
+        commandRequirements[j]->currentCommand = NULL;
         if (commandRequirements[j]->getDefaultCommand() != NULL) {
           commandsToAdd.push_back(commandRequirements[j]->getDefaultCommand());
         }

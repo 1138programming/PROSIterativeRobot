@@ -1,4 +1,5 @@
 #include "subsystems/ExampleSubsystem.h"
+#include "commands/ExampleCommand.h"
 
 ExampleSubsystem::ExampleSubsystem() {
   // If you want to set a default command to run when this subsystem
@@ -8,4 +9,5 @@ ExampleSubsystem::ExampleSubsystem() {
 
 void ExampleSubsystem::initDefaultCommand() {
   // Setup up a default command here
+  setDefaultCommand(new ExampleCommand());
 }
