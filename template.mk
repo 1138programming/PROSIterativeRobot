@@ -10,7 +10,7 @@ TEMPLATEFILES = GNUmakefile src/GNUmakefile include/RobotBase.h include/Robot.h 
 	include/events/EventScheduler.h include/events/JoystickButton.h \
 	include/commands/Command.h include/commands/CommandGroup.h \
 	src/init.cpp src/Robot.cpp src/subsystems/ExampleSubsystem.cpp \
-	src/commands/ExampleCommand.cpp include/subsystems/ExampleSubsyste.h \
+	src/commands/ExampleCommand.cpp include/subsystems/ExampleSubsystem.h \
 	include/commands/ExampleCommand.h
 # basename of the source files that should be archived
 TEMPLATEOBJS = _bin_RobotBase _bin_opcontrol _bin_auto _bin_subsystems_Subsystem\

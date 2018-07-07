@@ -5,6 +5,7 @@
 
 class ExampleSubsystem : public Subsystem {
   public:
+    void initDefaultCommand();
     ExampleSubsystem();
 };
 

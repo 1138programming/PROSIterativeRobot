@@ -12,12 +12,19 @@ EventScheduler::EventScheduler() {
 }
 
 void EventScheduler::update() {
-  for (EventListener* listener : eventListeners) {
-    listener->checkConditions();
+  //for (EventListener* listener : eventListeners) {
+  //  listener->checkConditions();
+  //}
+
+  for (Subsystem* subsystem : subsystems) {
+    printf("INITIALIZING A FUCKING SUBSYSTEM COMMAND\n");
+    subsystem->initDefaultCommand();
   }
+  subsystems.clear();
 
   std::vector<Command*> commandsToAdd;
   Command* command;
+  printf("CommandQueue size: %d", commandQueue.size());
   for (size_t i = 0; i < commandQueue.size(); i++) { // Should increment to zero if needed
     command = commandQueue[i];
     if (!command->canRun()) {
@@ -33,7 +40,7 @@ void EventScheduler::update() {
       std::vector<Subsystem*> commandRequirements = command->getRequirements();
       for (size_t j = 0; j < commandRequirements.size(); j++) {
         if (commandRequirements[j]->currentCommand != NULL) {
-          if (command->canBeInterruptedBy(commandRequirements[j]->currentCommand)) {
+          if (!commandRequirements[j]->currentCommand->canBeInterruptedBy(command)) {
             // Re-null all of the commands, send something to stdout, and
             // then remove this from the command queue.
             for (size_t k = j; k >= 0; --k) {
