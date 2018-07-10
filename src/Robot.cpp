@@ -3,6 +3,7 @@
 #include "events/JoystickButton.h"
 
 #include "commands/ExampleCommand.h"
+#include "commands/ExampleCommandGroup.h"
 
 Robot* Robot::instance = 0;
 ExampleSubsystem* Robot::exampleSubsystem = 0;
@@ -13,8 +14,11 @@ Robot::Robot() {
   exampleSubsystem = new ExampleSubsystem();
 
   // Initialize any actions/commands needed
-  JoystickButton* test = new JoystickButton(MainJoystick, Btn5U);
-  test->whenPressed(new ExampleCommand());
+  //JoystickButton* test = new JoystickButton(MainJoystick, Btn5U);
+  //test->whenPressed(new ExampleCommand());
+
+  auto test2 = new ExampleCommandGroup();
+  test2->run();
 }
 
 void Robot::robotInit() {

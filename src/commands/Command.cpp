@@ -1,5 +1,6 @@
 #include "commands/Command.h"
 #include "subsystems/Subsystem.h"
+#include "events/EventScheduler.h"
 
 Command::Command() {
 
@@ -21,7 +22,7 @@ void Command::initialize() {
 
 }
 
-void Command::run() {
+void Command::execute() {
 
 }
 
@@ -39,4 +40,8 @@ void Command::interrupted() {
 
 bool Command::canBeInterruptedBy(Command* aCommand) {
   return aCommand->priority > this->priority;
+}
+
+void Command::run() {
+  EventScheduler::getInstance()->addCommand(this);
 }

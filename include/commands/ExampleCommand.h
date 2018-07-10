@@ -7,7 +7,7 @@ class ExampleCommand : public Command {
   public:
     bool canRun();
     void initialize();
-    void run();
+    void execute();
     bool isFinished();
     void end();
     void interrupted();

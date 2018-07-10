@@ -1,4 +1,5 @@
 #include "events/EventScheduler.h"
+#include <algorithm>
 
 EventScheduler* EventScheduler::instance = NULL;
 
@@ -45,10 +46,7 @@ void EventScheduler::update() {
               commandRequirements[k]->currentCommand = NULL;
               printf("Warning: Command tried using a subsystem that was already in use! Skipping...\n");
             }
-            delay(500);
             commandQueue.erase(commandQueue.begin() + i);
-            printf("Erased");
-            delay(500);
             i--;
             goto skipCommand; // This is a valid use for a "goto"
           } else {
@@ -60,7 +58,7 @@ void EventScheduler::update() {
       command->initialize();
       command->initialized = true;
     }
-    command->run();
+    command->execute();
     if (command->isFinished()) {
       command->end();
       command->initialized = false;
@@ -79,6 +77,7 @@ void EventScheduler::update() {
     skipCommand:; // Exists as a label due to nexted for loops
   }
   commandQueue.insert(commandQueue.end(), commandsToAdd.begin(), commandsToAdd.end());
+  delay(5);
 }
 
 void EventScheduler::addCommand(Command* commandToRun) {
@@ -91,6 +90,10 @@ void EventScheduler::addEventListener(EventListener* eventListener) {
 
 void EventScheduler::trackSubsystem(Subsystem *aSubsystem) {
   this->subsystems.push_back(aSubsystem);
+}
+
+bool EventScheduler::commandInQueue(Command* aCommand) {
+  return std::find(commandQueue.begin(), commandQueue.end(), aCommand) != commandQueue.end();
 }
 
 EventScheduler* EventScheduler::getInstance() {

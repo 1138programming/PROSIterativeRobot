@@ -14,7 +14,7 @@ void ExampleCommand::initialize() {
   // constructor
 }
 
-void ExampleCommand::run() {
+void ExampleCommand::execute() {
   // Code that runs when this command is scheduled to run
   printf("Example command is running.\n");
 }
