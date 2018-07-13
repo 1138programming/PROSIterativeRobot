@@ -10,8 +10,6 @@ class Robot : public RobotBase {
   private:
     static Robot* instance;
   protected:
-    // Let's *not* let anybody randomly call something like robotInit() during
-    // a match or anywhere unintended, like in a command
     void robotInit();
     void autonInit();
     void autonPeriodic();
