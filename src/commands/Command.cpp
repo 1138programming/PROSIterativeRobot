@@ -3,7 +3,7 @@
 #include "events/EventScheduler.h"
 
 Command::Command() {
-
+  status = CommandStatus::idle;
 }
 
 void Command::requires(Subsystem* aSubsystem) {

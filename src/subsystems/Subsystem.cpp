@@ -2,8 +2,11 @@
 #include "events/EventScheduler.h"
 #include "commands/Command.h"
 
+size_t Subsystem::instances = 0;
+
 Subsystem::Subsystem() {
   EventScheduler::getInstance()->trackSubsystem(this);
+  instances++;
 }
 
 void Subsystem::setDefaultCommand(Command *aCommand) {

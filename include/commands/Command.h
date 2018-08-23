@@ -3,14 +3,20 @@
 
 #include "main.h"
 #include <vector>
+#include "subsystems/Subsystem.h"
+#include "events/EventScheduler.h"
 
-class Subsystem;
+enum class CommandStatus {
+  idle,
+  running,
+};
 
 class Command {
   private:
     std::vector<Subsystem*> subsystemRequirements;
   protected:
     void requires(Subsystem* aSubsystem);
+    CommandStatus status;
   public:
     int priority = 50; // Commands can only be interrupted by commands with a higher priority
     bool initialized = false;
@@ -32,6 +38,8 @@ class Command {
 
     // ...and finally, the constructor!
     Command();
+
+    friend class EventScheduler;
 };
 
 #endif // _COMMANDS_COMMAND_H_

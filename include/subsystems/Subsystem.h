@@ -2,7 +2,8 @@
 #define _SUBSYSTEMS_SUBSYSTEM_H_
 
 #include "main.h"
-#include "commands/Command.h"
+
+class Command;
 
 class Subsystem {
   private:
@@ -19,7 +20,7 @@ class Subsystem {
       * Initializes the default command. This should be the only place setDefaultCommand() is called.
       */
     virtual void initDefaultCommand();
-
+    static size_t instances;
     /**
       * Get this subsystem's default command.
       *
