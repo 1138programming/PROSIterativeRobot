@@ -13,9 +13,6 @@ EventScheduler::EventScheduler() {
 }
 
 void EventScheduler::update() {
-  printf("Start scheduler\n");
-  delay(1000);
-
   for (EventListener* listener : eventListeners) {
     listener->checkConditions();
   }
@@ -28,16 +25,10 @@ void EventScheduler::update() {
   size_t numSubsystems = Subsystem::instances;
   Command* command;
 
-  printf("Iterating through command queue\n");
-  delay(1000);
   for (size_t i = 0; i < commandQueue.size(); i++) {
-    printf("Command %i", i);
-    delay(1000);
     command = commandQueue[i];
 
     if (command->isFinished() == 0) {
-      printf(" is finished\n");
-      delay(1000);
       command->end();
       command->status = CommandStatus::idle;
       commandQueue.erase(commandQueue.begin() + i);
@@ -46,23 +37,17 @@ void EventScheduler::update() {
     }
 
     if (command->getRequirements().size() == 0) {
-      printf(" has no requirements");
-      delay(1000);
       if (command->status == CommandStatus::idle) {
         command->initialize();
         command->status = CommandStatus::running;
       }
       command->execute();
     }
-    printf("\n");
-    delay(1000);
   }
 
   if (commandQueue.size() == 0)
     return;
 
-  printf("Getting last command\n");
-  delay(1000);
   command = commandQueue[commandQueue.size() - 1];
 
   if (command->status == CommandStatus::idle) {
@@ -76,8 +61,6 @@ void EventScheduler::update() {
 
   bool canRun;
 
-  printf("Checking which commands can run");
-  delay(1000);
   for (size_t i = commandQueue.size() - 2; i >= 0; i--) {
     canRun = true;
 
@@ -178,12 +161,15 @@ void EventScheduler::addCommand(Command* command) {
   if (!commandInQueue(command)) {
     //this->commandQueue.push_back(commandToAdd);
     //std::sort(this->commandQueue.begin(), this->commandQueue.end());
-    if (commandQueue.size() == 0)
+    if (commandQueue.size() == 0) {
       commandQueue.push_back(command);
+      return;
+    }
 
     for (size_t i = 0; i < commandQueue.size(); i++) {
-      if (command->priority <= commandQueue[i]->priority)
+      if (command->priority <= commandQueue[i]->priority) {
         commandQueue.insert(commandQueue.begin() + i, command);
+      }
     }
   }
 }
