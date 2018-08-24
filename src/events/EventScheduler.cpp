@@ -48,6 +48,8 @@ void EventScheduler::update() {
   if (commandQueue.size() == 0)
     return;
 
+  printf("Getting last command\n");
+  delay(1000);
   command = commandQueue[commandQueue.size() - 1];
 
   if (command->status == CommandStatus::idle) {
@@ -61,18 +63,36 @@ void EventScheduler::update() {
 
   bool canRun;
 
+  printf("Checking which commands can run \n");
+  delay(1000);
   for (size_t i = commandQueue.size() - 2; i >= 0; i--) {
+    printf("CK 1\n");
+    delay(200);
     canRun = true;
 
+    printf("CK 2\n");
+    delay(200);
     command = commandQueue[i];
 
+    printf("CK 3\n");
+    delay(200);
     if (usedSubsystems.size() >= numSubsystems) {
       canRun = false;
     } else {
-      for (size_t j = commandQueue.size(); j < command->getRequirements().size(); j++) {
+      printf("CK 4\n");
+      delay(200);
+      for (size_t j = 0; j < command->getRequirements().size(); j++) {
+        printf("CK 4 %d. requirement size is %d\n", j, command->getRequirements().size());
+        delay(200);
         bool reqUsed = std::find(usedSubsystems.begin(), usedSubsystems.end(), command->getRequirements()[j]) != usedSubsystems.end();
+
+        printf("CK 5 %d. requirement size is %d\n", j, command->getRequirements().size());
+        delay(200);
         if (reqUsed) {
           canRun = false;
+
+          printf("CK 5 %d breaking\n", j);
+          delay(200);
           break;
         }
       }
