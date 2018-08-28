@@ -22,136 +22,51 @@ void EventScheduler::update() {
   }
   subsystems.clear();
 
-  size_t numSubsystems = Subsystem::instances;
-  Command* command;
-
-  for (size_t i = 0; i < commandQueue.size(); i++) {
-    command = commandQueue[i];
-
-    if (command->isFinished() == 0) {
-      command->end();
-      command->status = CommandStatus::idle;
-      commandQueue.erase(commandQueue.begin() + i);
-      i--;
-      continue;
-    }
-
-    if (command->getRequirements().size() == 0) {
-      if (command->status == CommandStatus::idle) {
-        command->initialize();
-        command->status = CommandStatus::running;
-      }
-      command->execute();
-    }
-  }
-
-  if (commandQueue.size() == 0)
-    return;
-
-  printf("Getting last command\n");
-  delay(1000);
-  command = commandQueue[commandQueue.size() - 1];
-
-  if (command->status == CommandStatus::idle) {
-    command->initialize();
-    command->status = CommandStatus::running;
-  }
-  command->execute();
-
   std::vector<Subsystem*> usedSubsystems;
-  usedSubsystems.insert(usedSubsystems.end(), command->getRequirements().begin(), command->getRequirements().end());
 
+  Command* command; // Holds the command we're currently checking for run-ability
   bool canRun;
 
-  printf("Checking which commands can run \n");
-  delay(1000);
-  for (size_t i = commandQueue.size() - 2; i >= 0; i--) {
-    printf("CK 1\n");
-    delay(200);
-    canRun = true;
-
-    printf("CK 2\n");
-    delay(200);
+  for (int i = commandQueue.size() - 1; i >= 0; i--) {
     command = commandQueue[i];
 
-    printf("CK 3\n");
-    delay(200);
-    if (usedSubsystems.size() >= numSubsystems) {
-      canRun = false;
-    } else {
-      printf("CK 4\n");
-      delay(200);
-      for (size_t j = 0; j < command->getRequirements().size(); j++) {
-        printf("CK 4 %d. requirement size is %d\n", j, command->getRequirements().size());
-        delay(200);
-        bool reqUsed = std::find(usedSubsystems.begin(), usedSubsystems.end(), command->getRequirements()[j]) != usedSubsystems.end();
+    canRun = command->canRun();
 
-        printf("CK 5 %d. requirement size is %d\n", j, command->getRequirements().size());
-        delay(200);
-        if (reqUsed) {
-          canRun = false;
+    // First, check requirements, and if we can't run because of them,
+    // then pop us off the commandQueue and pretend we don't exist
+    std::vector<Subsystem*>& commandRequirements = command->getRequirements();
 
-          printf("CK 5 %d breaking\n", j);
-          delay(200);
-          break;
-        }
+    for (Subsystem* aSubsystem : commandRequirements) {
+      if (std::find(usedSubsystems.begin(), usedSubsystems.end(), aSubsystem) != usedSubsystems.end()) {
+        // If the subsystem that we want to use is already in usedSubsystems
+        // (Quick sidenote: C++'s way of checking for object existence in
+        // an array seems really stupid, but it's surprisingly useful!)
+        // then we need to pop it off the queue, since we can't take control
+        //
+        // Remember: We're already going in order of priority, so we can't
+        // take control anyways
+        canRun = false;
+        break;
       }
     }
-
-    if (canRun) {
-      if (command->status == CommandStatus::idle) {
-        command->initialize();
-        command->status = CommandStatus::running;
-      }
-      command->execute();
-
-      usedSubsystems.insert(usedSubsystems.end(), command->getRequirements().begin(), command->getRequirements().end());
-    } else {
-      if (command->status == CommandStatus::running) {
+    if (!canRun) {
+      if (command->initialized) {
         command->interrupted();
-        command->status = CommandStatus::idle;
+        command->initialized = false;
       }
-
-      if (command->priority != 0) {
-        commandQueue.erase(std::find(commandQueue.begin(), commandQueue.end(), command));
+      if (command->priority > 0) {
+        // We're not a default command (defined by having a priority of 0),
+        // so there's no danger in discarding us
+        commandQueue.erase(commandQueue.begin() + i);
       }
-    }
-  }
-
-  /*
-  std::vector<Command*> commandsToAdd;
-  Command* command;
-  for (size_t i = 0; i < commandQueue.size(); i++) { // Should increment to zero if needed
-    command = commandQueue[i];
-    if (!command->canRun()) {
-      command->initialized = false;
-      commandQueue.erase(commandQueue.begin() + i);
-      i--;
       continue;
     }
+
+    // We've proven that we can run, and since we're going in order of descending
+    // priority, we don't need to worry abuot other commands using our requirements.
+    // Therefore, we can set up, execute, and finish the command like normal
+
     if (!command->initialized) {
-      // First, we need to make sure that none of the required subsystems are in
-      // use, and if they are, see if we have a larger priority (e.g. can take
-      // over that subsystem anyways)
-      std::vector<Subsystem*> commandRequirements = command->getRequirements();
-      for (size_t j = 0; j < commandRequirements.size(); j++) {
-        if (commandRequirements[j]->currentCommand != NULL) {
-          if (!commandRequirements[j]->currentCommand->canBeInterruptedBy(command)) {
-            // Re-null all of the commands, send something to stdout, and
-            // then remove this from the command queue.
-            for (size_t k = 0; k <= j; k++) {
-              commandRequirements[k]->currentCommand = NULL;
-              printf("Warning: Command tried using a subsystem that was already in use! Skipping...\n");
-            }
-            commandQueue.erase(commandQueue.begin() + i);
-            i--;
-            goto skipCommand; // This is a valid use for a "goto"
-          } else {
-            commandRequirements[j]->currentCommand->interrupted(); // Hopefully this won't take long
-          }
-        }
-        commandRequirements[j]->currentCommand = command;
-      }
       command->initialize();
       command->initialized = true;
     }
@@ -159,38 +74,34 @@ void EventScheduler::update() {
     if (command->isFinished()) {
       command->end();
       command->initialized = false;
-      commandQueue.erase(commandQueue.begin() + i);
-      i--;
-      // Now we need to free all of the subsystem's requirements and
-      // if needed, create the default command again
-      std::vector<Subsystem*> commandRequirements = command->getRequirements();
-      for (size_t j = 0; j < commandRequirements.size(); j++) {
-        commandRequirements[j]->currentCommand = NULL;
-        if (commandRequirements[j]->getDefaultCommand() != NULL) {
-          commandsToAdd.push_back(commandRequirements[j]->getDefaultCommand());
-        }
+      if (command->priority > 0) {
+        // Not a default command, we can pop it off the commandQueue
+        commandQueue.erase(commandQueue.begin() + i);
       }
     }
-    skipCommand:; // Exists as a label due to nexted for loops
   }
-  commandQueue.insert(commandQueue.end(), commandsToAdd.begin(), commandsToAdd.end());*/
+
   delay(5);
 }
 
 void EventScheduler::addCommand(Command* command) {
   if (!commandInQueue(command)) {
-    //this->commandQueue.push_back(commandToAdd);
-    //std::sort(this->commandQueue.begin(), this->commandQueue.end());
     if (commandQueue.size() == 0) {
       commandQueue.push_back(command);
       return;
     }
 
+    // 0, 5, 10
+    // trying to insert 7
+    //
+
     for (size_t i = 0; i < commandQueue.size(); i++) {
       if (command->priority <= commandQueue[i]->priority) {
         commandQueue.insert(commandQueue.begin() + i, command);
+        return;
       }
     }
+    commandQueue.push_back(command);
   }
 }
 

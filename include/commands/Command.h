@@ -6,17 +6,11 @@
 #include "subsystems/Subsystem.h"
 #include "events/EventScheduler.h"
 
-enum class CommandStatus {
-  idle,
-  running,
-};
-
 class Command {
   private:
     std::vector<Subsystem*> subsystemRequirements;
   protected:
     void requires(Subsystem* aSubsystem);
-    CommandStatus status;
   public:
     int priority = 50; // Commands can only be interrupted by commands with a higher priority
     bool initialized = false;
@@ -32,14 +26,13 @@ class Command {
 
     // Slightly more advanced features... use at your own risk, as
     // these may have unexpected consequences on the rest of the command system
-    virtual bool canBeInterruptedBy(Command* aCommand);
+    // See comment in cpp file, may be re-added later
+    //virtual bool canBeInterruptedBy(Command* aCommand);
 
     void run(); // Run this command. May be called anywhere.
 
     // ...and finally, the constructor!
     Command();
-
-    friend class EventScheduler;
 };
 
 #endif // _COMMANDS_COMMAND_H_
