@@ -13,12 +13,14 @@ EventScheduler::EventScheduler() {
 }
 
 void EventScheduler::update() {
+  //printf("Event scheduler update \n");
   for (EventListener* listener : eventListeners) {
     listener->checkConditions();
   }
 
   for (Subsystem* subsystem : subsystems) {
     subsystem->initDefaultCommand();
+    this->numSubsystems++;
   }
   subsystems.clear();
 
@@ -27,6 +29,7 @@ void EventScheduler::update() {
   Command* command; // Holds the command we're currently checking for run-ability
   bool canRun;
 
+  printf("CommandQueue size is %u\n", commandQueue.size());
   for (int i = commandQueue.size() - 1; i >= 0; i--) {
     command = commandQueue[i];
 
@@ -36,17 +39,21 @@ void EventScheduler::update() {
     // then pop us off the commandQueue and pretend we don't exist
     std::vector<Subsystem*>& commandRequirements = command->getRequirements();
 
-    for (Subsystem* aSubsystem : commandRequirements) {
-      if (std::find(usedSubsystems.begin(), usedSubsystems.end(), aSubsystem) != usedSubsystems.end()) {
-        // If the subsystem that we want to use is already in usedSubsystems
-        // (Quick sidenote: C++'s way of checking for object existence in
-        // an array seems really stupid, but it's surprisingly useful!)
-        // then we need to pop it off the queue, since we can't take control
-        //
-        // Remember: We're already going in order of priority, so we can't
-        // take control anyways
-        canRun = false;
-        break;
+    if (usedSubsystems.size() == this->numSubsystems || !canRun) {
+      canRun = false;
+    } else {
+      for (Subsystem* aSubsystem : commandRequirements) {
+        if (std::find(usedSubsystems.begin(), usedSubsystems.end(), aSubsystem) != usedSubsystems.end()) {
+          // If the subsystem that we want to use is already in usedSubsystems
+          // (Quick sidenote: C++'s way of checking for object existence in
+          // an array seems really stupid, but it's surprisingly useful!)
+          // then we need to pop it off the queue, since we can't take control
+          //
+          // Remember: We're already going in order of priority, so we can't
+          // take control anyways
+          canRun = false;
+          break;
+        }
       }
     }
     if (!canRun) {

@@ -7,7 +7,7 @@ Command::Command() {
 }
 
 void Command::requires(Subsystem* aSubsystem) {
-  printf("adding requirement");
+  printf("adding requirement\n");
   subsystemRequirements.push_back(aSubsystem);
 }
 

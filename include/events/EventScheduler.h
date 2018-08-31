@@ -9,6 +9,7 @@
 
 class EventScheduler {
   private:
+    size_t numSubsystems = 0;
     static EventScheduler* instance;
     EventScheduler();
     std::vector<Subsystem*> subsystems;

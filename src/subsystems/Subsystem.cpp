@@ -10,7 +10,7 @@ Subsystem::Subsystem() {
 }
 
 void Subsystem::setDefaultCommand(Command *aCommand) {
-  aCommand->priority = 0; // Give it the lowest possible priority
+  aCommand->priority = Command::DefaultCommandPriority; // Give it the lowest possible priority
   this->defaultCommand = aCommand;
   EventScheduler::getInstance()->addCommand(aCommand);
 }

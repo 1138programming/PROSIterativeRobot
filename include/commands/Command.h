@@ -12,6 +12,8 @@ class Command {
   protected:
     void requires(Subsystem* aSubsystem);
   public:
+    static const int DefaultCommandPriority = 0;
+
     int priority = 50; // Commands can only be interrupted by commands with a higher priority
     bool initialized = false;
 
