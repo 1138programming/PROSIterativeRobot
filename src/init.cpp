@@ -22,6 +22,7 @@
  * configure a UART port (usartOpen()) but cannot set up an LCD (lcdInit()).
  */
 void initializeIO() {
+  watchdogInit(); // Prevents random issues from static on the I2C line
 }
 
 /*
