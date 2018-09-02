@@ -40,6 +40,7 @@ void EventScheduler::update() {
     std::vector<Subsystem*>& commandRequirements = command->getRequirements();
 
     if (usedSubsystems.size() == this->numSubsystems || !canRun) {
+      // Shortcut to not iterate through the usedSubsystems vector each time
       canRun = false;
     } else {
       for (Subsystem* aSubsystem : commandRequirements) {
@@ -56,7 +57,10 @@ void EventScheduler::update() {
         }
       }
     }
-    if (!canRun) {
+    if (canRun) {
+      // Keep track of the subsystems we've already used
+      usedSubsystems.insert(usedSubsystems.end(), commandRequirements.begin(), commandRequirements.end());
+    } else {
       if (command->initialized) {
         command->interrupted();
         command->initialized = false;
