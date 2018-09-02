@@ -118,6 +118,10 @@ void EventScheduler::addCommand(Command* command) {
   }
 }
 
+void EventScheduler::clearCommandQueue() {
+  commandQueue.clear();
+}
+
 void EventScheduler::addEventListener(EventListener* eventListener) {
   this->eventListeners.push_back(eventListener);
 }
