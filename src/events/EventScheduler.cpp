@@ -60,6 +60,22 @@ void EventScheduler::update() {
     if (canRun) {
       // Keep track of the subsystems we've already used
       usedSubsystems.insert(usedSubsystems.end(), commandRequirements.begin(), commandRequirements.end());
+
+      if (!command->initialized) {
+        command->initialize();
+        command->initialized = true;
+      }
+
+      command->execute();
+
+      if (command->isFinished()) {
+        command->end();
+        command->initialized = false;
+        if (command->priority > 0) {
+          // Not a default command, we can pop it off the commandQueue
+          commandQueue.erase(commandQueue.begin() + i);
+        }
+      }
     } else {
       if (command->initialized) {
         command->interrupted();
@@ -70,26 +86,12 @@ void EventScheduler::update() {
         // so there's no danger in discarding us
         commandQueue.erase(commandQueue.begin() + i);
       }
-      continue;
+      //continue;
     }
 
     // We've proven that we can run, and since we're going in order of descending
     // priority, we don't need to worry abuot other commands using our requirements.
     // Therefore, we can set up, execute, and finish the command like normal
-
-    if (!command->initialized) {
-      command->initialize();
-      command->initialized = true;
-    }
-    command->execute();
-    if (command->isFinished()) {
-      command->end();
-      command->initialized = false;
-      if (command->priority > 0) {
-        // Not a default command, we can pop it off the commandQueue
-        commandQueue.erase(commandQueue.begin() + i);
-      }
-    }
   }
 
   delay(5);
