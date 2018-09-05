@@ -109,7 +109,7 @@ void EventScheduler::addCommand(Command* command) {
     //
 
     for (size_t i = 0; i < commandQueue.size(); i++) {
-      if (command->priority <= commandQueue[i]->priority) {
+      if (command->priority < commandQueue[i]->priority) {
         commandQueue.insert(commandQueue.begin() + i, command);
         return;
       }
