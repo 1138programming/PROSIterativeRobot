@@ -61,21 +61,25 @@ void JoystickButton::checkConditions() {
   if (currentButtonState) {
     if (currentButtonState == lastState) {
       if (heldCommand != NULL) {
-        EventScheduler::getInstance()->addCommand(heldCommand);
+        //EventScheduler::getInstance()->addCommand(heldCommand);
+        heldCommand->addSelf();
       }
     } else {
       if (pressedCommand != NULL) {
-        EventScheduler::getInstance()->addCommand(pressedCommand);
+        //EventScheduler::getInstance()->addCommand(pressedCommand);
+        heldCommand->addSelf();
       }
     }
   } else {
     if (currentButtonState == lastState) {
       if (releasedCommand != NULL) {
-        EventScheduler::getInstance()->addCommand(releasedCommand);
+        //EventScheduler::getInstance()->addCommand(releasedCommand);
+        heldCommand->addSelf();
       }
     } else {
       if (depressedCommand != NULL) {
-        EventScheduler::getInstance()->addCommand(depressedCommand);
+        //EventScheduler::getInstance()->addCommand(depressedCommand);
+        heldCommand->addSelf();
       }
     }
   }

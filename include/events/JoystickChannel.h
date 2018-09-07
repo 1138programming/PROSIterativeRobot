@@ -4,11 +4,8 @@
 #include "main.h"
 #include "events/EventListener.h"
 #include "commands/Command.h"
+#include "events/JoystickButton.h"
 
-enum Joysticks {
-  MainJoystick=1,
-  PartnerJoystick,
-};
 enum Channels {
   ChRightY=1,
   ChRightX,

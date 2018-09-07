@@ -4,7 +4,15 @@
 #include "main.h"
 #include <vector>
 #include "subsystems/Subsystem.h"
-#include "events/EventScheduler.h"
+//#include "events/EventScheduler.h"
+//#include "commands/CommandGroup.h"
+
+enum Status {
+  Idle = 0,
+  Running,
+  Finished,
+  Interrupted
+};
 
 class Command {
   private:
@@ -16,8 +24,12 @@ class Command {
 
     int priority = 50; // Commands can only be interrupted by commands with a higher priority
     bool initialized = false;
+    Status status = Idle;
 
     std::vector<Subsystem*>& getRequirements();
+
+    void addSelf();
+    void removeSelf();
 
     virtual bool canRun(); // Whether or not the command can run right now. If false, it is ignored
     virtual void initialize(); // Set up the command for running

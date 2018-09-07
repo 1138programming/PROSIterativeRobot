@@ -25,11 +25,56 @@ void EventScheduler::update() {
   subsystems.clear();
 
   std::vector<Subsystem*> usedSubsystems;
-
-  Command* command; // Holds the command we're currently checking for run-ability
+  CommandGroup* commandGroup;
   bool canRun;
 
-  printf("CommandQueue size is %u\n", commandQueue.size());
+  for (size_t i = commandGroupQueue.size() - 1; i >= 0; i--) {
+    if (commandGroup->status == Interrupted) {
+      commandGroupQueue.erase(commandGroupQueue.begin() + i);
+      commandGroup->interrupted();
+      continue;
+    }
+
+    canRun = commandGroup->canRun();
+    std::vector<Subsystem*>& commandGroupRequirements = commandGroup->getRequirements();
+
+    if (canRun) {
+      for (size_t j = 0; j < commandGroupRequirements.size(); j++) {
+        if (std::find(commandGroupQueue.begin(), commandGroupQueue.end(), commandGroup) != commandGroupQueue.end()) {
+          canRun = false;
+          break;
+        }
+      }
+    }
+
+    if (canRun) {
+      usedSubsystems.insert(usedSubsystems.end(), commandGroupRequirements.begin(), commandGroupRequirements.end());
+
+      if (commandGroup->status != Running) {
+        commandGroup->initialize();
+        commandGroup->status = Running;
+      }
+      commandGroup->execute();
+
+      if (commandGroup->isFinished()) {
+        commandGroup->end();
+        commandGroup->status = Finished;
+        commandGroupQueue.erase(commandGroupQueue.begin() + i);
+      }
+    } else {
+      if (commandGroup->status == Running) {
+        commandGroup->interrupted();
+        commandGroup->status = Interrupted;
+      }
+      commandGroupQueue.erase(commandGroupQueue.begin() + i);
+    }
+  }
+
+  usedSubsystems.clear();
+  Command* command; // Holds the command we're currently checking for run-ability
+
+
+  //printf("CommandQueue size is %u\n", commandQueue.size());
   for (int i = commandQueue.size() - 1; i >= 0; i--) {
     command = commandQueue[i];
 
@@ -61,25 +106,34 @@ void EventScheduler::update() {
       // Keep track of the subsystems we've already used
       usedSubsystems.insert(usedSubsystems.end(), commandRequirements.begin(), commandRequirements.end());
 
-      if (!command->initialized) {
+      /*if (!command->`initialized`) {
         command->initialize();
         command->initialized = true;
+      }*/
+      if (command->status != Running) {
+        command->initialize();
+        command->status = Running;
       }
 
       command->execute();
 
       if (command->isFinished()) {
         command->end();
-        command->initialized = false;
+        //command->initialized = false;
+        command->status = Finished;
         if (command->priority > 0) {
           // Not a default command, we can pop it off the commandQueue
           commandQueue.erase(commandQueue.begin() + i);
         }
       }
     } else {
-      if (command->initialized) {
+      /*if (command->initialized) {
         command->interrupted();
         command->initialized = false;
+      }*/
+      if (command->status == Running) {
+        command->interrupted();
+        command->status = Interrupted;
       }
       if (command->priority > 0) {
         // We're not a default command (defined by having a priority of 0),
@@ -118,8 +172,34 @@ void EventScheduler::addCommand(Command* command) {
   }
 }
 
+void EventScheduler::addCommandGroup(CommandGroup* commandGroupToRun) {
+  if (commandGroupInQueue(commandGroupToRun)) {
+    commandGroupToRun->initialize();
+  } else {
+    commandGroupQueue.push_back(commandGroupToRun);
+  }
+}
+
+void EventScheduler::removeCommand(Command* commandToRemove) {
+  size_t index = std::find(commandQueue.begin(), commandQueue.end(), commandToRemove) - commandQueue.begin();
+  if (index >= commandQueue.size())
+    return;
+  commandQueue.erase(commandQueue.begin() + index);
+}
+
+void EventScheduler::removeCommandGroup(CommandGroup* commandGroupToRemove) {
+  size_t index = std::find(commandGroupQueue.begin(), commandGroupQueue.end(), commandGroupToRemove) - commandGroupQueue.begin();
+  if (index >= commandGroupQueue.size())
+    return;
+  commandGroupQueue.erase(commandGroupQueue.begin() + index);
+}
+
 void EventScheduler::clearCommandQueue() {
   commandQueue.clear();
+}
+
+void EventScheduler::clearCommandGroupQueue() {
+  commandGroupQueue.clear();
 }
 
 void EventScheduler::addEventListener(EventListener* eventListener) {
@@ -132,6 +212,10 @@ void EventScheduler::trackSubsystem(Subsystem *aSubsystem) {
 
 bool EventScheduler::commandInQueue(Command* aCommand) {
   return std::find(commandQueue.begin(), commandQueue.end(), aCommand) != commandQueue.end();
+}
+
+bool EventScheduler::commandGroupInQueue(CommandGroup* aCommandGroup) {
+  return std::find(commandGroupQueue.begin(), commandGroupQueue.end(), aCommandGroup) != commandGroupQueue.end();
 }
 
 EventScheduler* EventScheduler::getInstance() {

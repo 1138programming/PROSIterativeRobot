@@ -13,11 +13,12 @@ TEMPLATEFILES = GNUmakefile src/GNUmakefile include/RobotBase.h include/Robot.h 
 	src/commands/ExampleCommand.cpp include/subsystems/ExampleSubsystem.h \
 	include/commands/ExampleCommand.h src/commands/ExampleCommandGroup.cpp \
 	include/commands/ExampleCommandGroup.h src/commands/ExampleWaitCommand.cpp \
-	include/commands/ExampleWaitCommand.h
+	include/commands/ExampleWaitCommand.h src/events/JoystickChannel.cpp \
+	include/events/JoystickChannel.h
 # basename of the source files that should be archived
 TEMPLATEOBJS = _bin_RobotBase _bin_opcontrol _bin_auto _bin_subsystems_Subsystem\
  	_bin_events_EventScheduler _bin_events_JoystickButton _bin_commands_Command\
-	_bin_commands_CommandGroup
+	_bin_commands_CommandGroup _bin_events_JoystickChannel
 
 # files to remove (e.g. ones that are changed/removed for this)
 REMOVEFILES = auto.c init.c opcontrol.c Makefile

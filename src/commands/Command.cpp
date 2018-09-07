@@ -15,6 +15,14 @@ std::vector<Subsystem*>& Command::getRequirements() {
   return this->subsystemRequirements;
 }
 
+void Command::addSelf() {
+  EventScheduler::getInstance()->addCommand(this);
+}
+
+void Command::removeSelf() {
+  EventScheduler::getInstance()->removeCommand(this);
+}
+
 bool Command::canRun() {
   return true;
 }
@@ -49,6 +57,6 @@ bool Command::canBeInterruptedBy(Command* aCommand) {
 }
 */
 
-void Command::run() {
+/*void Command::run() {
   EventScheduler::getInstance()->addCommand(this);
-}
+}*/

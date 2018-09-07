@@ -17,8 +17,8 @@ Robot::Robot() {
   JoystickButton* test = new JoystickButton(MainJoystick, Btn5U);
   test->whenPressed(new ExampleCommand());
 
-  auto test2 = new ExampleCommandGroup();
-  test2->run();
+  //auto test2 = new ExampleCommandGroup();
+  //test2->run();
 }
 
 void Robot::robotInit() {
