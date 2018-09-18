@@ -7,20 +7,13 @@ Command::Command() {
 }
 
 void Command::requires(Subsystem* aSubsystem) {
-  printf("adding requirement\n");
+  printf("adding command requirements\n");
+  //delay(1000);
   subsystemRequirements.push_back(aSubsystem);
 }
 
 std::vector<Subsystem*>& Command::getRequirements() {
   return this->subsystemRequirements;
-}
-
-void Command::addSelf() {
-  EventScheduler::getInstance()->addCommand(this);
-}
-
-void Command::removeSelf() {
-  EventScheduler::getInstance()->removeCommand(this);
 }
 
 bool Command::canRun() {
@@ -57,6 +50,14 @@ bool Command::canBeInterruptedBy(Command* aCommand) {
 }
 */
 
-/*void Command::run() {
+void Command::run() {
   EventScheduler::getInstance()->addCommand(this);
-}*/
+}
+
+void Command::stop() {
+  EventScheduler::getInstance()->removeCommand(this);
+}
+
+void Command::printSomething() {
+
+}

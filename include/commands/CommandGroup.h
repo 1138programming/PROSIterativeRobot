@@ -9,7 +9,7 @@ class CommandGroup : public Command {
   private:
     std::vector<std::vector<Command*>> commands;
     std::vector<std::vector<Subsystem*>> requirements;
-    std::vector<std::vector<bool>> added;
+    std::vector<std::vector<int>> added;
     size_t sequentialIndex = 0;
   public:
     //int priority = 50; // Commands can only be interrupted by commands with a higher priority
@@ -17,17 +17,20 @@ class CommandGroup : public Command {
 
     std::vector<Subsystem*>& getRequirements();
 
-    void addSelf();
-    void removeSelf();
-
     bool canRun();
     void initialize(); // Set up the command for running
     void execute(); // Run the command
     bool isFinished(); // Whether or not the command is finished. The run() command is run continuously until thie istrue
     void end();
     void interrupted();
-    virtual void addSequentialCommand(Command* aCommand);
-    virtual void addParallelCommand(Command* aCommand);
+    void addSequentialCommand(Command* aCommand);
+    void addParallelCommand(Command* aCommand);
+
+    void run(); // Run this command group. May be called anywhere.
+    void stop(); // Stop this command group while it is running. May be called anywhere.
+
+    void printSomething();
+
     CommandGroup(); // How about we only have them override the Constructor...
 };
 

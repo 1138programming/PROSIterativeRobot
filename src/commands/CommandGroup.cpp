@@ -10,15 +10,9 @@ std::vector<Subsystem*>& CommandGroup::getRequirements() {
   return requirements[sequentialIndex];
 }
 
-void CommandGroup::addSelf() {
-  EventScheduler::getInstance()->addCommandGroup(this);
-}
-
-void CommandGroup::removeSelf() {
-  EventScheduler::getInstance()->removeCommandGroup(this);
-}
-
 bool CommandGroup::canRun() {
+  printf("Checking if the command group can run\n");
+  //delay(1000);
   for (size_t i = 0; i < commands[sequentialIndex].size(); i++) {
     if (!commands[sequentialIndex][i]->canRun())
       return false;
@@ -27,6 +21,9 @@ bool CommandGroup::canRun() {
 }
 
 void CommandGroup::initialize() {
+  printf("Command group is initialized\n");
+  //delay(1000);
+  //printf("Total added size is %d and sequential added size is %d\n", added.size(), added[sequentialIndex].size());
   /*this->sequentialIndex = 0;
   std::vector<Command*> lastCommandList = this->commands[sequentialIndex];
   for (Command* aCommand : lastCommandList) {
@@ -36,12 +33,14 @@ void CommandGroup::initialize() {
 
   for (size_t i = 0; i < commands.size(); i++) {
     for (size_t j = 0; j < commands.size(); j++) {
-      added[i][j] = false;
+      added[i][j] = 0;
     }
   }
 }
 
 void CommandGroup::execute() {
+  //printf("Command group is running. Sequential step size is %d\n", commands[sequentialIndex].size());
+  //delay(1000);
   // Somewhat idle-ish loop to just check if we need to move to the next set of commands
   /*if (sequentialIndex == this->commands.size()) return;
   std::vector<Command*> lastCommandList = this->commands[sequentialIndex];
@@ -63,17 +62,22 @@ void CommandGroup::execute() {
 
   for (size_t i = 0; i < commands[sequentialIndex].size(); i++) {
     command = commands[sequentialIndex][i];
+    //printf("Index is %d\n", i);
+    //delay(1000);
     if (!added[sequentialIndex][i]) {
-      //EventScheduler::getInstance()->addCommand(command);
-      command->addSelf();
-      added[sequentialIndex][i] = true;
+      command->run();
+      added[sequentialIndex][i] = 1;
       sequentialFinished = false;
     } else {
       if (command->status != Finished) {
         sequentialFinished = false;
       }
 
+      //printf("Index is %d, status is %d\n", i, command->status);
+      //delay(100);
       if (command->status == Interrupted || (command->status != Running && command->status != Finished)) {
+        //printf("Command in commandGroup was interrupted\n");
+        //delay(1000);
         sequentialInterrupted = true;
       }
     }
@@ -100,24 +104,30 @@ bool CommandGroup::isFinished() {
 }
 
 void CommandGroup::end() {
-
+  printf("Command group is finished\n");
+  sequentialIndex = 0;
 }
 
 void CommandGroup::interrupted() {
-  status = Interrupted;
+  printf("Command group interrupted\n");
+  //delay(1000);
+  status = Idle;
   for (size_t i = 0; i < commands[sequentialIndex].size(); i++) {
-    commands[sequentialIndex][i]->removeSelf();
+    commands[sequentialIndex][i]->stop();
   }
+  sequentialIndex = 0;
 }
 
 void CommandGroup::addSequentialCommand(Command* aCommand) {
+  printf("Adding sequential command\n");
+  //delay(1000);
   std::vector<Command*> commandList;
   std::vector<Subsystem*> requirementList;
-  std::vector<bool> addedList;
+  std::vector<int> addedList;
 
   commandList.push_back(aCommand);
   requirementList.insert(requirementList.end(), aCommand->getRequirements().begin(), aCommand->getRequirements().end());
-  addedList.push_back(false);
+  addedList.push_back(0);
 
   this->commands.push_back(commandList);
   this->requirements.push_back(requirementList);
@@ -125,11 +135,29 @@ void CommandGroup::addSequentialCommand(Command* aCommand) {
 }
 
 void CommandGroup::addParallelCommand(Command *aCommand) {
-  std::vector<Command*> lastCommandList = this->commands.back();
-  std::vector<Subsystem*> lastRequirementList = this->requirements.back();
-  std::vector<bool> lastAddedList = this->added.back();
+  //std::vector<Command*> lastCommandList = this->commands.back();
+  //std::vector<Subsystem*> lastRequirementList = this->requirements.back();
+  //std::vector<int> lastAddedList = this->added.back();
 
-  lastCommandList.push_back(aCommand);
-  lastRequirementList.insert(lastRequirementList.end(), aCommand->getRequirements().begin(), aCommand->getRequirements().end());
-  lastAddedList.push_back(false);
+  this->commands.back().push_back(aCommand);
+  this->requirements.back().insert(this->requirements.back().end(), aCommand->getRequirements().begin(), aCommand->getRequirements().end());
+  this->added.back().push_back(0);
+  printf("Added parallel command. Size of last vector is %d\n", commands.back().size());
+  //delay(1000);
+}
+
+
+void CommandGroup::run() {
+  printf("Adding command group\n");
+  //delay(1000);
+  EventScheduler::getInstance()->addCommandGroup(this);
+}
+
+void CommandGroup::stop() {
+  EventScheduler::getInstance()->removeCommandGroup(this);
+}
+
+void CommandGroup::printSomething() {
+  printf("I am a command group!\n");
+  delay(1000);
 }

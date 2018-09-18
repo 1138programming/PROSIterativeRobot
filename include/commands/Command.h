@@ -28,8 +28,7 @@ class Command {
 
     std::vector<Subsystem*>& getRequirements();
 
-    void addSelf();
-    void removeSelf();
+    //void run();
 
     virtual bool canRun(); // Whether or not the command can run right now. If false, it is ignored
     virtual void initialize(); // Set up the command for running
@@ -43,7 +42,10 @@ class Command {
     // See comment in cpp file, may be re-added later
     //virtual bool canBeInterruptedBy(Command* aCommand);
 
-    void run(); // Run this command. May be called anywhere.
+    virtual void run(); // Run this command. May be called anywhere.
+    virtual void stop(); // Stop this command while it is running. May be called anywhere.
+
+    virtual void printSomething();
 
     // ...and finally, the constructor!
     Command();
