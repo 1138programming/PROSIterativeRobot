@@ -13,7 +13,7 @@ EventScheduler::EventScheduler() {
 }
 
 void EventScheduler::update() {
-  //printf("Event scheduler update...\n");
+  ////printf("Event scheduler update...\n");
   //delay(1000);
   for (EventListener* listener : eventListeners) {
     listener->checkConditions();
@@ -25,27 +25,27 @@ void EventScheduler::update() {
   }
   subsystems.clear();
 
-  //printf("Default commands initialized\n");
+  ////printf("Default commands initialized\n");
   //delay(1000);
 
   std::vector<Subsystem*> usedSubsystems;
   CommandGroup* commandGroup;
   bool canRun;
 
-  //printf("Looping through commandGroupQueue. CommandGroupQueue size is %d\n", commandGroupQueue.size());
+  ////printf("Looping through commandGroupQueue. CommandGroupQueue size is %d\n", commandGroupQueue.size());
   //delay(1000);
-  //printf("CommandGroupQueue size is %d\n", commandGroupQueue.size());
+  ////printf("CommandGroupQueue size is %d\n", commandGroupQueue.size());
 
   if (commandGroupQueue.size() != 0) {
     for (int i = commandGroupQueue.size() - 1; i >= 0; i--) {
       commandGroup = commandGroupQueue[i];
-      //printf("Index is %d\n", i);
+      ////printf("Index is %d\n", i);
       //delay(1000);
 
-      printf("Command group status is %d, interrupted is %d\n", commandGroup->status, Interrupted);
+      //printf("Command group status is %d, interrupted is %d\n", commandGroup->status, Interrupted);
       //delay(1000);
       if (commandGroup->status == Interrupted) {
-        printf("Command group was interrupted\n");
+        //printf("Command group was interrupted\n");
         //delay(1000);
         commandGroup->status = Idle;
         commandGroup->interrupted();
@@ -53,21 +53,21 @@ void EventScheduler::update() {
         continue;
       }
 
-      printf("Index is still %d\n", i);
+      //printf("Index is still %d\n", i);
       //delay(1000);
       canRun = commandGroup->canRun();
-      printf("Command group can run is %d\n", canRun);
+      //printf("Command group can run is %d\n", canRun);
       //delay(1000);
       std::vector<Subsystem*>& commandGroupRequirements = commandGroup->getRequirements();
 
       if (canRun) {
-        printf("Looping through command group requirements\n");
+        //printf("Looping through command group requirements\n");
         //delay(1000);
         /*for (size_t j = 0; j < commandGroupRequirements.size(); j++) {
-          //printf("Second index is %d, commandGroupRequirements size is %d and usedSubsystems size is %d\n", j, commandGroupRequirements.size(), usedSubsystems.size());
+          ////printf("Second index is %d, commandGroupRequirements size is %d and usedSubsystems size is %d\n", j, commandGroupRequirements.size(), usedSubsystems.size());
           //delay(1000);
           if (std::find(commandGroupQueue.begin(), commandGroupQueue.end(), commandGroup) != commandGroupQueue.end()) {
-            //printf("Command group cannot run\n");
+            ////printf("Command group cannot run\n");
             //delay(1000);
             canRun = false;
             break;
@@ -75,7 +75,7 @@ void EventScheduler::update() {
         }*/
         for (Subsystem* aSubsystem : commandGroupRequirements) {
           if (std::find(usedSubsystems.begin(), usedSubsystems.end(), aSubsystem) != usedSubsystems.end()) {
-            printf("Command group cannot run\n");
+            //printf("Command group cannot run\n");
             canRun = false;
             break;
           }
@@ -83,10 +83,10 @@ void EventScheduler::update() {
       }
 
       if (canRun) {
-        printf("Command group can run\n");
+        //printf("Command group can run\n");
         //delay(1000);
         usedSubsystems.insert(usedSubsystems.end(), commandGroupRequirements.begin(), commandGroupRequirements.end());
-        printf("Added command requirments to used subsystems\n");
+        //printf("Added command requirments to used subsystems\n");
         //delay(1000);
 
         if (commandGroup->status != Running) {
@@ -113,7 +113,7 @@ void EventScheduler::update() {
   usedSubsystems.clear();
   Command* command; // Holds the command we're currently checking for run-ability
 
-  //printf("CommandQueue size is %u\n", commandQueue.size());
+  ////printf("CommandQueue size is %u\n", commandQueue.size());
   if (commandQueue.size() != 0) {
     for (int i = commandQueue.size() - 1; i >= 0; i--) {
       command = commandQueue[i];
@@ -174,7 +174,7 @@ void EventScheduler::update() {
         if (command->status == Running) {
           command->interrupted();
           command->status = Interrupted;
-          printf("Command interrupted, status is %d, queue size is %d\n", command->status, commandQueue.size());
+          //printf("Command interrupted, status is %d, queue size is %d\n", command->status, commandQueue.size());
         }
         if (command->priority > 0) {
           // We're not a default command (defined by having a priority of 0),
@@ -190,7 +190,7 @@ void EventScheduler::update() {
     }
   }
 
-  //printf("Done!\n");
+  ////printf("Done!\n");
   //delay(1000);
   delay(5);
 }
@@ -222,26 +222,26 @@ void EventScheduler::addCommandGroup(CommandGroup* commandGroupToRun) {
   } else {
     commandGroupQueue.push_back(commandGroupToRun);
   }*/
-  printf("Attempting to add command group\n");
+  //printf("Attempting to add command group\n");
   //delay(1000);
   if (!commandGroupInQueue(commandGroupToRun)) {
-    printf("Command group queue size is %d\n", commandGroupQueue.size());
+    //printf("Command group queue size is %d\n", commandGroupQueue.size());
     //delay(1000);
     commandGroupQueue.push_back(commandGroupToRun);
-    printf("Command group queue size is %d\n", commandGroupQueue.size());
+    //printf("Command group queue size is %d\n", commandGroupQueue.size());
     //delay(1000);
   }
 }
 
 void EventScheduler::removeCommand(Command* commandToRemove) {
-  //printf("Removing command...");
+  ////printf("Removing command...");
   size_t index = std::find(commandQueue.begin(), commandQueue.end(), commandToRemove) - commandQueue.begin();
   if (index >= commandQueue.size()) {
-    //printf("Done!\n");
+    ////printf("Done!\n");
     return;
   }
   commandQueue.erase(commandQueue.begin() + index);
-  //printf("Done!\n");
+  ////printf("Done!\n");
 }
 
 void EventScheduler::removeCommandGroup(CommandGroup* commandGroupToRemove) {
@@ -272,7 +272,7 @@ bool EventScheduler::commandInQueue(Command* aCommand) {
 }
 
 bool EventScheduler::commandGroupInQueue(CommandGroup* aCommandGroup) {
-  printf("Checking if command group is in the queue\n");
+  //printf("Checking if command group is in the queue\n");
   //delay(1000);
   return std::find(commandGroupQueue.begin(), commandGroupQueue.end(), aCommandGroup) != commandGroupQueue.end();
 }

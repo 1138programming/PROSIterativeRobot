@@ -59,17 +59,17 @@ JoystickButton::JoystickButton(Joysticks joystick, Buttons button) {
 void JoystickButton::checkConditions() {
   bool currentButtonState = joystickGetDigital(joystickToCheck, buttonGroup, button);
   if (currentButtonState) {
-    //printf("Current button state is %d and last button state is %d\n", currentButtonState, lastState);
+    //////printf("Current button state is %d and last button state is %d\n", currentButtonState, lastState);
     //delay(100);
     if (currentButtonState == lastState) {
-      //printf("Holding button\n");
+      //////printf("Holding button\n");
       if (heldCommand != NULL) {
         //EventScheduler::getInstance()->addCommand(heldCommand);
         heldCommand->run();
       }
     } else {
       if (pressedCommand != NULL) {
-        printf("Button pressed\n");
+        ////printf("Button pressed\n");
         //delay(1000);
         //EventScheduler::getInstance()->addCommand(pressedCommand);
         //pressedCommand->printSomething();
@@ -79,13 +79,13 @@ void JoystickButton::checkConditions() {
   } else {
     if (currentButtonState == lastState) {
       if (releasedCommand != NULL) {
-        printf("Button released\n");
+        ////printf("Button released\n");
         //EventScheduler::getInstance()->addCommand(releasedCommand);
         releasedCommand->run();
       }
     } else {
       if (depressedCommand != NULL) {
-        printf("Not holding button\n");
+        ////printf("Not holding button\n");
         //EventScheduler::getInstance()->addCommand(depressedCommand);
         depressedCommand->run();
       }
@@ -95,7 +95,7 @@ void JoystickButton::checkConditions() {
 }
 
 void JoystickButton::whenPressed(Command* pressedCommand) {
-  printf("Pressed command equal to null is: %d\n", pressedCommand == NULL);
+  ////printf("Pressed command equal to null is: %d\n", pressedCommand == NULL);
   //delay(1000);
   this->pressedCommand = pressedCommand;
 }
