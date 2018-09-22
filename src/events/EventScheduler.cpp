@@ -142,6 +142,10 @@ void EventScheduler::update() {
           }
         }
       }
+
+      if (commandRequirements.size() == 0)
+        canRun = true;
+
       if (canRun) {
         // Keep track of the subsystems we've already used
         usedSubsystems.insert(usedSubsystems.end(), commandRequirements.begin(), commandRequirements.end());
