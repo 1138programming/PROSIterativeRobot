@@ -3,7 +3,6 @@
 #include <algorithm>
 
 CommandGroup::CommandGroup() {
-  status = Idle;
 }
 
 std::vector<Subsystem*>& CommandGroup::getRequirements() {
@@ -11,26 +10,18 @@ std::vector<Subsystem*>& CommandGroup::getRequirements() {
 }
 
 bool CommandGroup::canRun() {
-  printf("Checking if the command group can run\n");
-  //delay(1000);
+  // Loops through the current sequential step and checks if each command and command group can run
   for (size_t i = 0; i < commands[sequentialIndex].size(); i++) {
     if (!commands[sequentialIndex][i]->canRun())
-      return false;
+      return false; // If any cannot run, the command group cannot run
   }
-  return true;
+  return true; // If all can run, the command group can run
 }
 
 void CommandGroup::initialize() {
-  printf("Command group is initialized\n");
-  //delay(1000);
-  //printf("Total added size is %d and sequential added size is %d\n", added.size(), added[sequentialIndex].size());
-  /*this->sequentialIndex = 0;
-  std::vector<Command*> lastCommandList = this->commands[sequentialIndex];
-  for (Command* aCommand : lastCommandList) {
-    EventScheduler::getInstance()->addCommand(aCommand);
-  }*/
-  sequentialIndex = 0;
+  sequentialIndex = 0; // Initializes the sequential index to 0
 
+  // Loops through the added 2d vector and sets each element to 0
   for (size_t i = 0; i < commands.size(); i++) {
     for (size_t j = 0; j < commands.size(); j++) {
       added[i][j] = 0;
@@ -39,88 +30,61 @@ void CommandGroup::initialize() {
 }
 
 void CommandGroup::execute() {
-  //printf("Command group is running. Sequential step size is %d\n", commands[sequentialIndex].size());
-  //delay(1000);
-  // Somewhat idle-ish loop to just check if we need to move to the next set of commands
-  /*if (sequentialIndex == this->commands.size()) return;
-  std::vector<Command*> lastCommandList = this->commands[sequentialIndex];
-  if (std::all_of(lastCommandList.begin(),
-                  lastCommandList.end(),
-                  [](Command* aCommand){
-                    return !EventScheduler::getInstance()->commandInQueue(aCommand);
-                  })) {
-    this->sequentialIndex++;
-    if (sequentialIndex == this->commands.size()) return;
-    lastCommandList = this->commands[sequentialIndex];
-    for (Command* aCommand : lastCommandList) {
-      EventScheduler::getInstance()->addCommand(aCommand);
-    }
-  }*/
-  bool sequentialFinished = true;
-  bool sequentialInterrupted = false;
-  Command* command;
+  bool sequentialFinished = true; // Boolean to check if the current sequential step is finished
+  bool sequentialInterrupted = false; // Boolean to check if the current sequential step has been interrupted
+  Command* command; // Pointer to a command or command group
 
+  // Loops through the commands and command groups in the current sequential step
   for (size_t i = 0; i < commands[sequentialIndex].size(); i++) {
-    command = commands[sequentialIndex][i];
-    //printf("Index is %d\n", i);
-    //delay(1000);
+    command = commands[sequentialIndex][i]; // Sets command to the command or command group the for loop is accessing
+
+    // If the current command has not been added to the event scheduler, add it
     if (!added[sequentialIndex][i]) {
-      command->run();
-      added[sequentialIndex][i] = 1;
-      sequentialFinished = false;
-    } else {
+      command->run(); // Add the current command or command group to the event scheduler
+      added[sequentialIndex][i] = 1; // Set the element in the added 2d vector corresponding to the current command or command group to 1
+      sequentialFinished = false; // The current sequential step is not finished, so set sequentialFinished to false
+    } else { // Otherwise, check the command's status
+      // If the command's status is not Finished, then the current sequential step is not finished
       if (command->status != Finished) {
         sequentialFinished = false;
       }
 
-      //printf("Index is %d, status is %d\n", i, command->status);
-      //delay(100);
+      // If the command's status is interrupted or the command was added but is not running and has not finished (indicating it could not run because of a higher priority command), then set sequentialInterrupted to true
       if (command->status == Interrupted || (command->status != Running && command->status != Finished)) {
-        //printf("Command in commandGroup was interrupted\n");
-        //delay(1000);
         sequentialInterrupted = true;
       }
     }
   }
 
-  if (sequentialInterrupted)
-    status = Interrupted;
-
-  if (sequentialFinished)
-    sequentialIndex++;
+  //Updates the command group's status based on sequentialInterrupted and sequentialFinished
+  if (sequentialInterrupted) status = Interrupted;
+  if (sequentialFinished) sequentialIndex++; // If the current sequential step is finished, the command group moves on to the next sequential step
 }
 
 bool CommandGroup::isFinished() {
-  /*if (this->sequentialIndex == this->commands.size()) {
-    std::vector<Command*> lastCommandList = this->commands.back();
-    return std::all_of(lastCommandList.begin(),
-                       lastCommandList.end(),
-                       [](Command* aCommand){
-                         return !EventScheduler::getInstance()->commandInQueue(aCommand);
-                       });
-  }
-  return false;*/
+  // Checks if the command group has finished all of its sequential steps
   return !(sequentialIndex < commands.size());
 }
 
 void CommandGroup::end() {
-  printf("Command group is finished\n");
+  // Resets sequentialIndex to 0
   sequentialIndex = 0;
 }
 
 void CommandGroup::interrupted() {
-  printf("Command group interrupted\n");
-  //delay(1000);
+  // Resets the command group's status to idle to let it run again in the future
   status = Idle;
+
+  // Loops through the sequential step and stop any commands and command groups still running
   for (size_t i = 0; i < commands[sequentialIndex].size(); i++) {
     commands[sequentialIndex][i]->stop();
   }
+
+  // Resets sequentialIndex to 0
   sequentialIndex = 0;
 }
 
 void CommandGroup::addSequentialCommand(Command* aCommand) {
-  printf("Adding sequential command\n");
-  //delay(1000);
   std::vector<Command*> commandList;
   std::vector<Subsystem*> requirementList;
   std::vector<int> addedList;
@@ -135,29 +99,18 @@ void CommandGroup::addSequentialCommand(Command* aCommand) {
 }
 
 void CommandGroup::addParallelCommand(Command *aCommand) {
-  //std::vector<Command*> lastCommandList = this->commands.back();
-  //std::vector<Subsystem*> lastRequirementList = this->requirements.back();
-  //std::vector<int> lastAddedList = this->added.back();
-
   this->commands.back().push_back(aCommand);
   this->requirements.back().insert(this->requirements.back().end(), aCommand->getRequirements().begin(), aCommand->getRequirements().end());
   this->added.back().push_back(0);
-  printf("Added parallel command. Size of last vector is %d\n", commands.back().size());
-  //delay(1000);
 }
 
 
 void CommandGroup::run() {
-  printf("Adding command group\n");
-  //delay(1000);
+  // Adds the command group to the event scheduler
   EventScheduler::getInstance()->addCommandGroup(this);
 }
 
 void CommandGroup::stop() {
+  // Removes the command group from the event scheduler
   EventScheduler::getInstance()->removeCommandGroup(this);
-}
-
-void CommandGroup::printSomething() {
-  printf("I am a command group!\n");
-  delay(1000);
 }

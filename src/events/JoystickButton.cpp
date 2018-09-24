@@ -2,7 +2,10 @@
 #include "events/EventScheduler.h"
 
 JoystickButton::JoystickButton(Joysticks joystick, Buttons button) {
+  // Joystick to check can either be the main controller or partner controller
   this->joystickToCheck = (int)joystick;
+
+  // Sets the buttonGroup and button based on the enum value passed to the JoystickButton instance
   switch (button) {
     case Btn5U:
       this->buttonGroup = 5;
@@ -53,50 +56,43 @@ JoystickButton::JoystickButton(Joysticks joystick, Buttons button) {
       this->button = JOY_RIGHT;
       break;
   }
+
+  // Adds the JoystickButton instance to the event scheduler
   EventScheduler::getInstance()->addEventListener(this);
 }
 
 void JoystickButton::checkConditions() {
+  // Keeps track of the button's current state
   bool currentButtonState = joystickGetDigital(joystickToCheck, buttonGroup, button);
+
+  // Decides which command or command group to run based on the last state and current state of the button. There are four possiblities
   if (currentButtonState) {
-    //////printf("Current button state is %d and last button state is %d\n", currentButtonState, lastState);
-    //delay(100);
-    if (currentButtonState == lastState) {
-      //////printf("Holding button\n");
-      if (heldCommand != NULL) {
-        //EventScheduler::getInstance()->addCommand(heldCommand);
+    if (lastState) { // Possibility 1: current state is true and last state is true
+      if (heldCommand != NULL) { // heldCommand is run if it is not null
         heldCommand->run();
       }
-    } else {
-      if (pressedCommand != NULL) {
-        ////printf("Button pressed\n");
-        //delay(1000);
-        //EventScheduler::getInstance()->addCommand(pressedCommand);
-        //pressedCommand->printSomething();
+    } else { // Possibility 2: current state is true and last state is false
+      if (pressedCommand != NULL) { // pressedCommand is run if it is not null
         pressedCommand->run();
       }
     }
   } else {
-    if (currentButtonState == lastState) {
-      if (releasedCommand != NULL) {
-        ////printf("Button released\n");
-        //EventScheduler::getInstance()->addCommand(releasedCommand);
-        releasedCommand->run();
-      }
-    } else {
-      if (depressedCommand != NULL) {
-        ////printf("Not holding button\n");
-        //EventScheduler::getInstance()->addCommand(depressedCommand);
+    if (lastState) { // Possibility 3: current state is false and last state is true
+      if (depressedCommand != NULL) { // depressedCommand is run if it is not null
         depressedCommand->run();
+      }
+    } else { // Possibility 4: current state is false and last state is false
+      if (releasedCommand != NULL) { // releasedCommand is run if it is not null
+        releasedCommand->run();
       }
     }
   }
+
+  // Last state is updated
   lastState = currentButtonState;
 }
 
 void JoystickButton::whenPressed(Command* pressedCommand) {
-  ////printf("Pressed command equal to null is: %d\n", pressedCommand == NULL);
-  //delay(1000);
   this->pressedCommand = pressedCommand;
 }
 

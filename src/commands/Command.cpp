@@ -3,12 +3,9 @@
 #include "events/EventScheduler.h"
 
 Command::Command() {
-  initialized = false;
 }
 
 void Command::requires(Subsystem* aSubsystem) {
-  printf("adding command requirements\n");
-  //delay(1000);
   subsystemRequirements.push_back(aSubsystem);
 }
 
@@ -56,8 +53,4 @@ void Command::run() {
 
 void Command::stop() {
   EventScheduler::getInstance()->removeCommand(this);
-}
-
-void Command::printSomething() {
-
 }

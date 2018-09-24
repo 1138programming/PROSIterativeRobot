@@ -13,11 +13,8 @@ void JoystickChannel::checkConditions() {
 
   int currentChannelState = joystickGetAnalog(joystickToCheck, channel);
   if (currentChannelState > threshold || currentChannelState < -threshold) {
-    //EventScheduler::getInstance()->addCommand(pastThresholdCommand);
     pastThresholdCommand->run();
   }
-  //printf("Joystick channel current value is %d and the threshold is %d\n", currentChannelState, threshold);
-  //printf("Checking joystick channel conditions\n");
 }
 
 void JoystickChannel::whilePastThreshold(Command* pastThresholdCommand, int threshold) {
