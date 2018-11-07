@@ -19,10 +19,12 @@ void EventScheduler::update() {
   }
 
   // Initializes each subsystem's default command
-  for (Subsystem* subsystem : subsystems) {
-    subsystem->initDefaultCommand();
+  if (!defaultAdded) {
+    for (Subsystem* subsystem : subsystems) {
+      subsystem->initDefaultCommand();
+    }
+    defaultAdded = true;
   }
-  subsystems.clear(); // Clears subsystems vector so that default commands are initialized only once
 
   // The following chunk of code from lines 28-92 schedules command groups, running those that can run, finishing those that are finished, and interrupting those that have been interrupted
   std::vector<Subsystem*> usedSubsystems; // Vector keeping track of which subsystems have already been claimed by a command or command group
@@ -211,6 +213,12 @@ void EventScheduler::clearCommandGroupQueue() {
   for (size_t i = 0; i < commandGroupQueue.size(); i++) {
     removeCommandGroup(commandGroupQueue[i]);
   }
+}
+
+void EventScheduler::initialize() {
+  clearCommandQueue();
+  clearCommandGroupQueue();
+  defaultAdded = false;
 }
 
 void EventScheduler::addEventListener(EventListener* eventListener) {
