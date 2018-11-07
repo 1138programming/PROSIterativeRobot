@@ -1,8 +1,9 @@
 #include "commands/ExampleCommandGroup.h"
 #include "commands/ExampleCommand.h"
-#include "commands/ExampleWaitCommand.h"
 
 ExampleCommandGroup::ExampleCommandGroup() {
-  addSequentialCommand(new ExampleWaitCommand());
+  // Add commands to be run sequentially using addSequentialCommand()
   addSequentialCommand(new ExampleCommand());
+
+  // Add commands to be run in parallel using addParallelCommand();
 }

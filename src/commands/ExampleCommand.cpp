@@ -2,7 +2,11 @@
 #include "Robot.h"
 
 ExampleCommand::ExampleCommand() {
+  // Add all requirements using requires()
   requires(Robot::exampleSubsystem);
+
+  // Set the command's priority
+  this->priority = DefaultCommandPriority;
 }
 
 bool ExampleCommand::canRun() {
@@ -10,13 +14,11 @@ bool ExampleCommand::canRun() {
 }
 
 void ExampleCommand::initialize() {
-  // Perform any initialization steps for this command here, not in the
-  // constructor
+  // Perform any initialization steps for this command here, not in the constructor
 }
 
 void ExampleCommand::execute() {
   // Code that runs when this command is scheduled to run
-  printf("Example command is running.\n");
 }
 
 bool ExampleCommand::isFinished() {
@@ -28,6 +30,5 @@ void ExampleCommand::end() {
 }
 
 void ExampleCommand::interrupted() {
-  // Code that runs when this command is interrupted by another one
-  // with a higher priority.
+  // Code that runs when this command is interrupted by another one with a higher priority.
 }
